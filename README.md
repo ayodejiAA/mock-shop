@@ -1,21 +1,11 @@
-# Backend Developer Application Challenge
+[![Build Status](https://travis-ci.com/ayodejiAA/mock-shop.svg?branch=master)](https://travis-ci.com/ayodejiAA/mock-shop)
 
-**Mock Shop** is a simple shopping server. You are required to develop the backend API. 
-You can fork this git repository and get to work!
+[![Coverage Status](https://coveralls.io/repos/github/ayodejiAA/mock-shop/badge.svg?branch=master)](https://coveralls.io/github/ayodejiAA/mock-shop?branch=master)
 
-**Due Date:** 6 days after Test email receipt (Usually places due date on Friday, at noon).
+# Mock Shop
 
-## Features
+**Mock Shop** is a simple shopping server.
 
-- User can Sign Up.
-- User can Sign in.
-- Admin can add a Product.
-- Admin can delete a Product.
-- Admin can edit a Product.
-- Users/Admin can see all products.
-- Users can add product to a Cart.
-- A user can see product in his/her cart.
-- User can delete a product from his/her cart.
 
 ## Tools
 - Server side Framework: ***Nodejs/Express***
@@ -23,25 +13,81 @@ You can fork this git repository and get to work!
 - Style Guide: ***Airbnb***
 - Testing: ***Mocha Chai***
 - DB: ***Postgres***
+- Sequelize ORM
 - Documentation: ***Swagger***
 - Hosting: ***Heroku***
-
-## Requirements
-1. Make sure your endpoints are well documented with Swagger. This will help evaluators better test your code.
-2. Seed the database with enough data to aid in evaluation (i.e. lots of products to work with).
-3. You're expected to use `BEARER TOKEN` and `JWT` to handle all authentications and Authorizations.
-4. Host code on Github repository, with a well detailed readme.
-5. Host the API on a heroku live server.
-6. API versioning is expected, for example: `https://exampleapp.com/api/v1`
-7. Use appropriate HTTP status codes.
+- Validation: **Joi**
+- Compiler - **Babel**
 
 
-## Stand out
-1. Thorough Swagger Documentation.
-2. Design a simple user interface with a React framework to comsume the API
-3. implement `Sequelize` ORM for postgres.
+## Documentation
 
-## Guide
+The API is well documented  with Swagger at http://this-mock-shop.herokuapp.com/api/v1/docs
+
+## Hosting
+This API is hosted on heroku server http://this-mock-shop.herokuapp.com/api/v1
+
+# Installation 
+To run this application in development mode, you'll need Node.js (which comes with npm) installed on your computer. From your command line:
+
+
+* Enters the project directory
+* Use the .env.sample file as a guide to the add necessary environment variables to .env file. 
+* Run `npm install` to install all dependencies.
+* Run `npm run db:migrate` to setup your database.
+* You can as well run `npm run db:rollback` to migrate and automatically seed the database with data.
+* Run `npm start:dev` to start the development server and points your API testing tool to localhost:5000.
+
+
+
+## Features and endpoints
+
+1. User can Sign Up. 
+```
+POST /api/v1/auth/signup
+```
+2. User can Sign in.
+```
+POST /api/v1/auth/login
+```
+3. Admin can add a Product.
+```
+POST /api/v1/products/
+```
+4. Admin can delete a Product.
+```
+DELETE /api/v1/products/<productId>
+```
+5. Admin can edit a Product.
+```
+PATCH /api/v1/products/<productId>
+```
+6. Users/Admin can see all products.
+```
+GET /api/v1/products
+```
+7. Users can add product to a Cart.
+```
+POST /api/v1/products/<productId>/cart
+```
+8. A user can see product in his/her cart.
+```
+GET /api/v1/cart
+```
+9. User can delete a product from his/her cart.
+```
+DELETE /api/v1/products/<productId>/cart
+```
+
+# Testing
+Automated tests are available for a few endpoints. You can run the test script after you are through with the project installation. 
+
+- Run `npm test` to run the script and see the test coverage.
+
+
+
+
+# Guide
 ### API Specifications
 The API endpoints should respond with a JSON object specifying the HTTP ***status*** code, and either a ***data*** property (on success) or an ***error*** property (on failure).
 

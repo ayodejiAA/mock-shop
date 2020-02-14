@@ -373,8 +373,10 @@ paths:
 components:
   securitySchemes:
     BearerAuth:
+      description: Token authorization with JWT
       type: http
       scheme: bearer
+      bearerFormat: JWT
 
   userSignupDetails:
     type: object
