@@ -1,0 +1,654 @@
+openapi: 3.0.1
+
+info:
+  title: Mock Shop API Documentation
+  description: Mock Shop
+  version: 1.0.0
+  contact:
+    email: afolabiayodejia@gmail.com
+
+license:
+  name: Apache 2.0
+  url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: /
+    desription: Localhost server
+  - url: https://this-mock-shop.herokuapp.com/
+    desription: Heroku development server
+
+paths:
+  /api/v1:
+    summary: Represent root of the application
+    description: Represent root of the application.
+    get:
+      summary: API Base Route.
+      description: Returns a welcome message.
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/baseUrlSuccessResponse'
+
+  /api/v1/auth/signup:
+    post:
+      summary: Register new user (Basic User / Admin)
+      description: Allow new users to register to use the application on providing valid details
+      requestBody:
+        description: Set isAdmin to true to create admin users or false for basic users
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/userSignupDetails'
+        description: user details
+      responses:
+        201:
+          description: New user created successfully.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/signupResponse'
+    
+        409:
+          description: Email has already been taken.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+        422:
+          description: Validaton errors.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/validationResponse'
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/serverResponse'
+
+  /api/v1/auth/login:
+    post:
+      summary: Logging in users
+      description:  Allow existing users to login to use the application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/UserLoginDetails'
+        description: user to be created
+
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/loginResponse'
+        401: 
+          description: Email or password incorrect.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+
+        422:
+          description: Validaton errors.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/validationResponse'
+
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/serverResponse'
+
+  /api/v1/products/:
+    post:
+      summary: Add new product to shop
+      description: Allow admin to add product to the shop
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/ProductAddDetails'
+
+      responses:
+        201:
+          description: Product Successfully Created
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/productAddResponse'
+
+        422:
+          description: Validaton errors.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/validationResponse'
+
+        401: 
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+
+        403:
+          description: Unauthourised user
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+        500:
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/serverResponse'
+
+    get: 
+      summary: Get all products in the shop
+      description: Allow basic users and admins to fetch all products in the store
+      responses:
+        200:
+          description: Product fetched successfully
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/allProductResponse'
+
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/serverResponse'
+
+
+  /api/v1/products/{productId}:
+    delete:
+      summary: Delete specific product using product ID
+      description: Allows the admin to delete product from the shop
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          type: integer
+          required: true
+
+      responses:
+        200:
+          description: product deleted successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/productDeleteResponse"
+        401: 
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+        404:
+          description: Product/Url requested not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/errorResponse"
+        403:
+          description: Unauthourised user
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+        500:
+          description: Internal server error  
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/serverResponse"
+    patch:
+      summary: Update specific product using product ID
+      description: Allows the admin to edit product information
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          type: integer
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/ProductUpdateDetails'
+
+      responses:
+        200:
+          description: product updated successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/productUpdateResponse"
+        401:
+          description: authentication error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/errorResponse"
+
+        404:
+          description: product not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/errorResponse"
+        403:
+          description: Unauthourised user
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'   
+
+        422:
+          description: Validaton errors.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/validationResponse'                       
+        500:
+          description: Internal server error  
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/serverResponse"
+
+  /api/v1/products/{productId}/cart:
+    post:
+      summary: User can add product to cart
+      description: Allows users to add product to cart 
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          type: integer
+          required: true
+
+      responses:
+        201:
+          description: Product added successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/productAddedToCartResponse"
+        401: 
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+        404:
+          description: Product/Url requested not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/errorResponse"
+        409:
+          description: product already in cart
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+
+        500:
+          description: Internal server error  
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/serverResponse"
+    delete:
+      summary: User can remove product for his/her cart
+      description: Allows users to remove product from the cart 
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          type: integer
+          required: true
+      responses:
+        200:
+          description: Product removed successfully from cart.
+
+        401: 
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/errorResponse'
+        404:
+          description: Product/Url requested not found or not in cart
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/errorResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/serverResponse'            
+
+  /api/v1/cart:
+    get: 
+      summary: Get all products in the cart
+      description: Allow users to get all products added to the cart
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: All products fetched successfully
+
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/serverResponse'
+                     
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  userSignupDetails:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - email
+      - password
+      - isAdmin
+    properties:
+      firstName:
+        type: string
+        example: Gift
+      lastName:
+        type: string
+        example: Mark
+      email:
+        type: string
+        example: email@gmail.com
+      password:
+        type: string
+        example: incorrect4NOW
+      isAdmin:
+        type: boolean
+        example: false
+
+  UserLoginDetails:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        example: email@gmail.com
+      password:
+        type: string
+        example: incorrect4NOW
+  
+  ProductAddDetails:
+    type: object
+    required:
+      - name
+      - description
+      - category
+      - price
+      - image
+      - inStock
+    properties:
+      name:
+        type: string
+        example: Nike Vaporfly 4%
+      description:
+        type: string
+        example: Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.
+      category: 
+        type: string
+        example: clothes
+      price: 
+        type: integer
+        example: 200.55
+      image: 
+        type: string
+        format: binary
+      inStock:
+        type: boolean
+        example: true
+
+  ProductUpdateDetails:
+    type: object
+    properties:
+      name:
+        type: string
+        example: Nike Vaporfly 4%
+      description:
+        type: string
+      category: 
+        type: string
+        example: clothes
+      price: 
+        type: integer
+      image: 
+        type: string
+        format: binary
+      inStock:
+        type: boolean
+        example: true
+
+  schemas:
+    signupResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            email:
+              type: string
+              example: email@gmail.com
+            firstName:
+              type: string
+              example: Mike
+            lastName:
+              type: string
+              example: Man
+            isAdmin:
+              type: boolean
+            token:
+              type: string
+
+    loginResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            email:
+              type: string
+              example: email@gmail.com
+            firstName:
+              type: string
+              example: Mike
+            lastName:
+              type: string
+              example: Man
+            isAdmin:
+              type: boolean
+            token:
+              type: string
+
+    productAddResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            description:
+              type: string
+            category: 
+              type: string
+            price: 
+              type: integer
+            image: 
+              type: string
+              format: binary
+            inStock:
+              type: boolean
+
+    productUpdateResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            description:
+              type: string
+            category: 
+              type: string
+            price: 
+              type: integer
+            image: 
+              type: string
+              format: binary
+            inStock:
+              type: boolean
+
+    productDeleteResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+
+    allProductResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          example: products
+
+    productAddedToCartResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            description:
+              type: string
+            price:
+              type: intger
+
+    errorResponse:
+      type: object
+      properties:
+        status: 
+          type: string
+          example: error
+        error:
+          type: string
+
+
+    validationResponse:
+      type: object
+      properties:
+        status: 
+          type: string
+          example: error
+        error:
+          type: object
+          properties:
+            fieldName: 
+              type: string
+              example: fieldName is required
+
+
+
+    serverResponse:
+      type: object
+      properties:
+        status: 
+          type: string
+          example: error
+        error:
+          type: string
+          example: Internal Server Error
+   
+
+
+    baseUrlSuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message: 
+          type: string
+          example: Welcome to the mock-shop API
