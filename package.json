@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint './server/**/*.js'",
-    "test": "cross-env NODE_ENV=test npm run db:rollback && nyc mocha  --require @babel/register ./test/**/*.test.js --timeout 1000  --exit ",
+    "test": "npm run db:rollback && nyc mocha  --require @babel/register ./test/**/*.test.js --timeout 1000  --exit ",
     "start": "node ./build",
-    "start:dev": "cross-env DEBUG=dev nodemon --exec babel-node ./server",
+    "start:dev": "DEBUG=dev nodemon --exec babel-node ./server",
     "build": "rm -rf build && babel server -d build && npm run copy:docs",
     "copy:docs": "cp -r server/docs/ build/docs/",
     "db:migrate": "sequelize db:migrate",
@@ -53,7 +53,6 @@
     "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
-    "cross-env": "^7.0.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
@@ -62,5 +61,9 @@
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0",
     "sinon": "^8.1.1"
+  },
+  
+  "engines": {
+    "node": "12.x"
   }
 }
